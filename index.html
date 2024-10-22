@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+        <style>
+            html {                
+                height: 100%;
+            }
+            body {
+                background-color: darkgray;
+                position: relative;
+                height: 100%;
+            }
+            .calculadora {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="calculadora">
+            <h1 class="text-5xl mb-4">Calculadora</h1>
+            <div id="list"></div>
+            <button id="add" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-7">Añadir artículo</button>
+            <button id="clean" class="mt-4 inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Limpiar</button>
+            <h2 class="mt-4 text-3xl">Total: <span id="total"></span>$</h2>
+            <div class="mt-4">
+                <button id="pay" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Pagada</button>
+                <button id="copy" class="inline-block bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-12">Copiar Venta</button>
+                <button id="resetAll" class="inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Eliminar datos</button>
+            </div>
+        </div>
+        <script>
+            const products = {
+                0: { name: '', price: 0},
+                1: { name: 'Soda de granada', price: 20},
+                2: { name: 'Mocktail náutico', price: 20},
+                3: { name: 'Batido tropical', price: 20},
+                4: { name: 'Brisa marina', price: 35},
+                5: { name: 'Capitan BBQ', price: 35},
+                6: { name: 'Puerto del ternasco', price: 35},
+                7: { name: 'Cazuela de mar', price: 35},
+                8: { name: 'Tapa sorpresa', price: 35},
+                9: { name: 'Whiskey sunset', price: 25},
+                10: { name: 'Sandy shot', price: 25},
+                11: { name: '1 Pack', price: 50},
+                12: { name: '2 Pack', price: 100},
+                13: { name: '3 Pack', price: 150},
+            };
+            let allData  = loadData();
+            let cart = [{index: 0, cuantity: 1, price: 0, product: 0}];
+            render();
+            $('#resetAll').click(()=> resetAll());
+            $('#add').click(()=> add());
+            $('#pay').click(()=> payCart());
+            $('#clean').click(()=> clean());
+            $('#copy').click(()=> copyToClipboard());
+
+            function saveData() {
+                window.localStorage.setItem('allData', JSON.stringify(allData));
+            }
+
+            function resetAll() {
+                allData = [];
+                saveData();
+                clean();
+            }
+            
+            function loadData() {
+                return JSON.parse(window.localStorage.getItem('allData')) || [];
+            }
+
+            function render() {
+                $('#list').html('');
+                let total = 0;
+                for (let i = 0; i < cart.length; i++) {
+                    total = total + cart[i].price;
+                    $('#list').append(`
+                <div class="line mt-2">
+                    <div class="inline-block mr-2">
+                        <select index="${i}" class="select py-3 px-4 pe-9 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none">
+                            <option value="0" ${cart[i].product == 0 ? 'selected' : ''}>Selecciona un producto</option>
+                            <option value="1" ${cart[i].product == 1 ? 'selected' : ''}>Soda de granada</option>
+                            <option value="2" ${cart[i].product == 2 ? 'selected' : ''}>Mocktail nautico</option>
+                            <option value="3" ${cart[i].product == 3 ? 'selected' : ''}>Batido tropical</option>
+                            <option value="4" ${cart[i].product == 4 ? 'selected' : ''}>Brisa marina</option>
+                            <option value="5" ${cart[i].product == 5 ? 'selected' : ''}>Capitan BBQ</option>
+                            <option value="6" ${cart[i].product == 6 ? 'selected' : ''}>Puerto del ternasco</option>
+                            <option value="7" ${cart[i].product == 7 ? 'selected' : ''}>Cazuela de mar</option>
+                            <option value="8" ${cart[i].product == 8 ? 'selected' : ''}>Tapa sorpresa</option>
+                            <option value="9" ${cart[i].product == 9 ? 'selected' : ''}>Whiskey sunset</option>
+                            <option value="10" ${cart[i].product == 10 ? 'selected' : ''}>Sandy shot</option>
+                            <option value="11" ${cart[i].product == 11 ? 'selected' : ''}>1 Pack</option>
+                            <option value="12" ${cart[i].product == 12 ? 'selected' : ''}>2 Pack</option>
+                            <option value="13" ${cart[i].product == 13 ? 'selected' : ''}>3 Pack</option>
+                        </select>
+                    </div>                
+                    <button index="${i}" class="minus inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">-</button>
+                    <div class="inline-block mr-2 text-2xl">${cart[i].cuantity}</div>
+                    <button index="${i}" class="plus inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">+</button>
+                    <div class="inline-block mr-7 text-2xl">${cart[i].price}$</div>
+                    <button index="${i}" class="remove inline-block bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">E</button>
+                </div>`);
+                }
+                $('#total').html(total)
+                linkEvents();
+            }
+
+            function clean() {
+                cart = [{index: 0, cuantity: 1, price: 0, product: 0}];
+                render();
+            }
+
+            function payCart() {
+                allData = [...allData, ...cart];
+                saveData();
+                clean();
+            }
+
+            function add() {
+                cart.push({index: 0, cuantity: 1, price: 0, product: 0})
+                render();
+            }
+            
+            async function copyToClipboard() {
+                let total = 0;
+                let str = 'Productos/servicios y cantidad vendidos:\n';
+                cart.forEach(data => {
+                    total = total + data.price;
+                    str = str + `- ${data.cuantity} ${products[data.product].name}\n`
+                });
+                str = str + `Total: ${total}$`
+                await navigator.clipboard.writeText(str);
+            }
+
+            function linkEvents() {
+                $('.select').change((e)=> select(e));
+                $('.minus').click((e)=> minus(e));
+                $('.plus').click((e)=> plus(e));
+                $('.remove').click((e)=> remove(e));
+            }
+
+            function select(e) {
+                const index = +$(e.target).attr('index');
+                const data = cart[index];
+                const value = +e.target.value;
+                const product = products[+e.target.value];
+                if (value == 0) {
+                    cart[index] = {index: index, cuantity: 1, price: 0, product: 0};
+                } else {
+                    data.product = value;
+                    data.price = product.price * data.cuantity;
+                }
+                console.log(cart)
+                render();
+            }
+            
+            function minus(e) {
+                const data = cart[+$(e.target).attr('index')];
+                const value = +e.target.value;
+                data.cuantity = data.cuantity - 1;
+                if (data.cuantity < 1) {
+                    data.cuantity = 1;
+                }
+                data.price = products[data.product].price * data.cuantity;
+                render();
+            }
+
+            function plus(e) {
+                const data = cart[+$(e.target).attr('index')];
+                const value = +e.target.value;
+                data.cuantity = data.cuantity + 1;
+                data.price = products[data.product].price * data.cuantity;
+                render();
+
+            }
+
+            function remove(e) {
+                const index = +$(e.target).attr('index');
+                if (index != 0) {
+                    cart = cart.filter((val, i) => i != index);
+                    render();
+                }
+            }
+        </script>
+    </body>
+</html>
