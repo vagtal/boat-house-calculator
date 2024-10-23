@@ -101,7 +101,7 @@
                     <div class="inline-block mr-2 text-2xl">${cart[i].cuantity}</div>
                     <button index="${i}" class="plus inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">+</button>
                     <div class="inline-block mr-2 text-2xl">${cart[i].price}$</div>
-                    <div class="mr-7 inline-flex items-center">
+                    <div class="mr-7 inline-flex items-center" title="Tienes que marcar los dos productos que conforman el pack">
                         <label class="flex items-center cursor-pointer relative">
                             <input id="checkbox${i}" index="${i}" ${cart[i].pack ? 'checked' : ''} type="checkbox" class="checkbox peer h-5 w-5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-blue-300 checked:bg-blue-800 checked:border-blue-800"/>
                                 <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
