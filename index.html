@@ -50,10 +50,7 @@
                 7: { name: 'Cazuela de mar', price: 35},
                 8: { name: 'Tapa sorpresa', price: 35},
                 9: { name: 'Whiskey sunset', price: 25},
-                10: { name: 'Sandy shot', price: 25},
-                11: { name: '1 Pack', price: 50},
-                12: { name: '2 Pack', price: 100},
-                13: { name: '3 Pack', price: 150},
+                10: { name: 'Sandy shot', price: 25}
             };
             let allData  = loadData();
             let cart = [{index: 0, cuantity: 1, price: 0, product: 0, pack: false}];
@@ -98,9 +95,6 @@
                             <option value="8" ${cart[i].product == 8 ? 'selected' : ''}>Tapa sorpresa</option>
                             <option value="9" ${cart[i].product == 9 ? 'selected' : ''}>Whiskey sunset</option>
                             <option value="10" ${cart[i].product == 10 ? 'selected' : ''}>Sandy shot</option>
-                            <option value="11" ${cart[i].product == 11 ? 'selected' : ''}>1 Pack</option>
-                            <option value="12" ${cart[i].product == 12 ? 'selected' : ''}>2 Pack</option>
-                            <option value="13" ${cart[i].product == 13 ? 'selected' : ''}>3 Pack</option>
                         </select>
                     </div>                
                     <button index="${i}" class="minus inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">-</button>
